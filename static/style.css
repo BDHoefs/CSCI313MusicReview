@@ -1,0 +1,63 @@
+.navbar {
+  padding: 15px 10px;
+  border: none;
+  border-radius: 15px;
+  margin-bottom: 40px;
+  background: rgba(15, 17, 19, 0.5);
+  backdrop-filter: blur(10px);
+  box-shadow: 10px 10px 3px rgba(0, 0, 0, 0.2);
+}
+
+.page-wrapper {
+  display: flex;
+  width: 100%;
+  align-items: stretch;
+}
+
+#sidebar {
+  min-width: 250px;
+  max-width: 250px;
+  transition: all 0.3s;
+  border-radius: 15px;
+  margin-bottom: 15px;
+  margin-top: 15px;
+  margin-left: -250px; /* By default this element is slid off the page to the left */
+  margin-right: 15px;
+  background: rgba(28, 31, 34, 0.2);
+  backdrop-filter: blur(10px);
+  box-shadow: none;
+}
+
+#sidebarContent {
+  opacity: 1;
+  padding: 20px;
+  font-size: 1.1em;
+  display: block;
+}
+
+#sidebar.active {
+  margin-left: 15px;
+  box-shadow: 10px 10px 3px rgba(0, 0, 0, 0.15);
+}
+
+#navbarAndContent {
+  width: 100%;
+  padding: 20px;
+  min-height: 100vh;
+  transition: all 0.3s;
+}
+
+#profilePhoto {
+  width: 30px;
+  height: 30px;
+  background: red;
+  border-radius: 15px;
+}
+
+#content {
+  padding: 20px;
+  border-radius: 15px;
+  background: rgba(28, 31, 34, 0.2);
+  backdrop-filter: blur(10px);
+  box-shadow: 10px 10px 3px rgba(0, 0, 0, 0.2);
+}
