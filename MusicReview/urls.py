@@ -7,6 +7,7 @@ urlpatterns = [
     path('register', views.register, name='register'),
     path('browse_artists', views.browse_artists, name='browse_artists'),
     path('browse_releases', views.browse_releases, name='browse_releases'),
+    path('search', views.search, name='search'),
     path('release/<int:pk>', views.release, name='release'),
     path('artist/<int:pk>', views.artist, name='artist'),
     path('user/<int:pk>', views.user, name='user'),

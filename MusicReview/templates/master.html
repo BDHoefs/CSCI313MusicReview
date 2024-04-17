@@ -107,13 +107,22 @@
             </button>
 
             <ul class="nav navbar-nav">
-              <li class="nav-item">
+              <form
+                action="{% url 'search'%}"
+                method="post"
+                class="form-inline mr-4"
+              >
+                {% csrf_token %} {{ searchForm.as_p }}
+                <input class="btn btn-dark" type="submit" value="Search" />
+              </form>
+
+              <li class="nav-item mt-3">
                 <a class="nav-link" href="{% url 'logon' %}">Login</a>
               </li>
-              <li class="nav-item">
+              <li class="nav-item mt-3">
                 <a class="nav-link" href="{% url 'register' %}">Register</a>
               </li>
-              <li class="nav-item">
+              <li class="nav-item mt-3">
                 <a class="nav-link" href="{% url 'user' userId %}">
                   <div id="profilePhoto"></div>
                 </a>
@@ -122,11 +131,11 @@
           </div>
         </nav>
         <div id="content" class="text-light">
-          {% for message in err_messages %}
+          {% for message in errMessages %}
           <div class="alert alert-danger">
             <p>{{ message }}</p>
           </div>
-          {% endfor %} {% for message in info_messages %}
+          {% endfor %} {% for message in infoMessages %}
           <div class="alert alert-primary">
             <p>{{ message }}</p>
           </div>
