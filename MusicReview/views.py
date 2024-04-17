@@ -61,7 +61,7 @@ def admin_reports(request):
 
 @requires_csrf_token
 def accent_colors_test(request):
-    ctx = { "userId": 0, "accentColors": default_colors(), "form": ImageColorForm() }
+    ctx = { "userId": 0, "accentColors": default_colors(), "form": ImageColorForm(), "err_messages": ["This is a message", "And another message"] }
     if request.method == "POST":
         ctx["form"] = ImageColorForm(request.POST, request.FILES)
         if ctx["form"].is_valid():
