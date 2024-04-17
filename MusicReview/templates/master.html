@@ -119,14 +119,20 @@
               <li class="nav-item mt-3">
                 <a class="nav-link" href="{% url 'logon' %}">Login</a>
               </li>
+              {% if userName is None %}
               <li class="nav-item mt-3">
                 <a class="nav-link" href="{% url 'register' %}">Register</a>
               </li>
+              {% endif %} {% if userName is None %} {% else %}
               <li class="nav-item mt-3">
-                <a class="nav-link" href="{% url 'user' userId %}">
+                <a class="nav-link" href="{% url 'logout' %}">Log out</a>
+              </li>
+              <li class="nav-item mt-3">
+                <a class="nav-link" href="{% url 'user' userName %}">
                   <div id="profilePhoto"></div>
                 </a>
               </li>
+              {% endif %}
             </ul>
           </div>
         </nav>

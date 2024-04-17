@@ -14,7 +14,7 @@ Accent Colors - MusicReview
 </p>
 
 <form enctype="multipart/form-data" action = "{%url 'accent-colors-test' %}"" method="post">{% csrf_token %}
-    {{ form.as_p }}
+    {{ imageForm.as_p }}
     <input class="btn btn-dark" type="submit" value="Submit" />
 </form>
 

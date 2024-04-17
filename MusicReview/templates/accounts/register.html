@@ -1,5 +1,18 @@
-{% extends 'master.html' %} {% block title %}
-  Register - MusicReview
-{% endblock %} {% block content %}
-  <h1>This is the register page!</h1>
+{% extends 'master.html' %} {% block title %} Register - MusicReview
+{%endblock%} {% block content %}
+
+<form action="{% url 'register'%}" method="post" class="form">
+  {% csrf_token %}
+  <div
+    class="h-100 d-flex flex-column align-items-center justify-content-center"
+  >
+    {% for field in registerForm %}
+    <div class="form-group">
+      <label style="width: 200px; text-align: right">{{field.label}}</label>
+      {{field}}
+    </div>
+    {% endfor %}
+    <input class="btn btn-dark" type="submit" value="Register" />
+  </div>
+</form>
 {% endblock %}

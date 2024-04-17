@@ -1,6 +1,17 @@
-{% extends 'master.html' %} {% block title %}
-  Login - MusicReview
-{% endblock %}
+{% extends 'master.html' %} {% block title %} Login - MusicReview {% endblock %}
 {% block content %}
-  <h1>This is the login page!</h1>
+<form action="{% url 'logon'%}" method="post" class="form">
+  {% csrf_token %}
+  <div
+    class="h-100 d-flex flex-column align-items-center justify-content-center"
+  >
+    {% for field in loginForm %}
+    <div class="form-group">
+      <label style="width: 200px; text-align: right">{{field.label}}</label>
+      {{field}}
+    </div>
+    {% endfor %}
+    <input class="btn btn-dark" type="submit" value="Login" />
+  </div>
+</form>
 {% endblock %}
