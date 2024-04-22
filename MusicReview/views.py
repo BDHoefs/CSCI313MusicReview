@@ -1,12 +1,15 @@
+from datetime import timedelta
+from statistics import mean
+
 from django.shortcuts import render, redirect
 from django.views.decorators.csrf import requires_csrf_token
 from django.contrib.auth import authenticate, login, logout
-
 
 from PIL import Image
 
 from .accent_colors import default_colors, calculate_accent_colors
 from .forms import ImageColorForm, SearchForm, CreateUserForm, LoginForm
+from .models import Release
 
 def get_ctx(request):
     ctx = { "accentColors": default_colors(), "searchForm": SearchForm() }
@@ -82,7 +85,19 @@ def search(request):
 @requires_csrf_token
 def release(request, pk):
     ctx = get_ctx(request)
-    # View logic here
+
+    release = Release.objects.get(pk=pk)
+    ctx["release"] = release
+
+    songs = release.songs.all()
+    song_lengths = [(song.title, str(timedelta(seconds=song.length)).lstrip("0:")) for song in songs if song.length is not None]
+    ctx["songLengths"] = song_lengths
+
+    ctx["artists"] = ', '.join([artist.name for artist in release.artists.all()])
+
+    reviews = release.reviews.all()
+    average_rating = mean([review.rating for review in reviews])
+
     return render(request, 'music/release.html', context = ctx)
 
 # CSRF Token because a user may submit forms to this view to update and add information to the artist or submit reports

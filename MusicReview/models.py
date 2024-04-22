@@ -24,6 +24,7 @@ class Release(models.Model):
     title = models.CharField(max_length = 100)
     cover_art = models.ImageField(upload_to="cover_art")
     release_type = models.CharField(max_length = 100)
+    genres = models.CharField(max_length = 1000)
     is_explicit = models.BooleanField()
     songs = models.ManyToManyField(Song)
     artists = models.ManyToManyField(Artist)
