@@ -15,11 +15,12 @@
       </tr>
       {% endfor %}
     </table>
+    <a class="text-center" href="#">Missing tracks?</a>
   </div>
 
   <div class="flex-grow-1 ml-4">
     <h1>{{release.title}}</h1>
-    <table class="table" style="width: 50%">
+    <table class="table">
       <tr>
         <td>Artists</td>
         <td style="text-align: right">{{artists}}</td>
@@ -28,7 +29,32 @@
         <td>Type</td>
         <td style="text-align: right">{{release.release_type}}</td>
       </tr>
+      <tr>
+        <td>Genres</td>
+        <td style="text-align: right">{{release.genres}}</td>
+      </tr>
+      <tr>
+        <td>Rating</td>
+        <td style="text-align: right">{{averageRating}}</td>
+      </tr>
+      <tr>
+        <td>Explicit content</td>
+        <td style="text-align: right">
+          {% if release.is_explicit %} Yes {% else %} No {% endif %}
+        </td>
+      </tr>
     </table>
+
+    <h3>{{reviews|length}} Reviews</h3>
+    {% for review in reviews %}
+    <div class="p-3 bg-dark rounded">
+      <div style="display: flex; justify-content: space-between">
+        <b>{{ review.user.username }}</b>
+        <p style="margin-left: auto">{{ review.score }}/10</p>
+      </div>
+      <p>{{review.content}}</p>
+    </div>
+    {% endfor %}
   </div>
 </div>
 {% endblock %}

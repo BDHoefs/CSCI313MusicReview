@@ -15,7 +15,7 @@ class Song(models.Model):
     added_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
 
 class Review(models.Model):
-    content = models.TextField()
+    content = models.TextField(blank=True)
     score = models.IntegerField() # 0 - 10 score
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     time = models.DateTimeField()
@@ -31,6 +31,7 @@ class Release(models.Model):
     reviews = models.ManyToManyField(Review, blank=True)
     last_reviewed = models.DateTimeField(blank=True, null=True) # For sorting by last reviewed in the browse page
     time_added = models.DateTimeField() # For sorting by recent in the browse page
+    released = models.DateField(null=True),
     added_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True) 
     accent_color1 = models.CharField(max_length = 10, blank=True) # Stored as a hex string. Ex. #FFFFFF
     accent_color2 = models.CharField(max_length = 10, blank=True) 

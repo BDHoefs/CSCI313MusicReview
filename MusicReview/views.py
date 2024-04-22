@@ -96,7 +96,11 @@ def release(request, pk):
     ctx["artists"] = ', '.join([artist.name for artist in release.artists.all()])
 
     reviews = release.reviews.all()
-    average_rating = mean([review.rating for review in reviews])
+    ctx["reviews"] = reviews
+    if reviews.count() > 0:
+        ctx["averageRating"] = str(mean([review.score for review in reviews])) + '/10'
+    else:
+        ctx["averageRating"] = "Not reviewed yet"
 
     return render(request, 'music/release.html', context = ctx)
 
