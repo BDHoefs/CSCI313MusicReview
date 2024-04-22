@@ -27,14 +27,14 @@ class Release(models.Model):
     is_explicit = models.BooleanField()
     songs = models.ManyToManyField(Song)
     artists = models.ManyToManyField(Artist)
-    reviews = models.ManyToManyField(Review)
-    last_reviewed = models.DateTimeField() # For sorting by last reviewed in the browse page
+    reviews = models.ManyToManyField(Review, blank=True)
+    last_reviewed = models.DateTimeField(blank=True, null=True) # For sorting by last reviewed in the browse page
     time_added = models.DateTimeField() # For sorting by recent in the browse page
     added_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True) 
-    accent_color1 = models.CharField(max_length = 10, null=True) # Stored as a hex string. Ex. #FFFFFF
-    accent_color2 = models.CharField(max_length = 10, null=True) 
-    accent_color3 = models.CharField(max_length = 10, null=True) 
-    accent_color4 = models.CharField(max_length = 10, null=True) 
+    accent_color1 = models.CharField(max_length = 10, blank=True) # Stored as a hex string. Ex. #FFFFFF
+    accent_color2 = models.CharField(max_length = 10, blank=True) 
+    accent_color3 = models.CharField(max_length = 10, blank=True) 
+    accent_color4 = models.CharField(max_length = 10, blank=True) 
 
 class ReportArtistInfo(models.Model):
     artist = models.ForeignKey(Artist, on_delete=models.CASCADE)
