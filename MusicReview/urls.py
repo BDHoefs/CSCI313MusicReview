@@ -1,4 +1,6 @@
 from django.urls import path
+from django.conf import settings
+from django.conf.urls.static import static
 from MusicReview import views
 
 urlpatterns = [
@@ -14,4 +16,4 @@ urlpatterns = [
     path('user/<str:pk>', views.user, name='user'),
     path('admin_reports', views.admin_reports, name='admin_reports'),
     path('accent-color-test', views.accent_colors_test, name='accent-colors-test'),
-]
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

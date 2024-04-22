@@ -9,7 +9,7 @@ class Artist(models.Model):
 
 class Song(models.Model):
     title = models.CharField(max_length = 100)
-    length = models.TimeField(null = True)
+    length = models.IntegerField(null = True) # Song length in seconds
     is_explicit = models.BooleanField(),
     artists = models.ManyToManyField(Artist)
     added_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
@@ -23,6 +23,7 @@ class Review(models.Model):
 class Release(models.Model):
     title = models.CharField(max_length = 100)
     cover_art = models.ImageField(upload_to="cover_art")
+    release_type = models.CharField(max_length = 100)
     is_explicit = models.BooleanField()
     songs = models.ManyToManyField(Song)
     artists = models.ManyToManyField(Artist)

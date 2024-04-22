@@ -81,7 +81,7 @@ def search(request):
 # CSRF Token because a user may submit forms to this view to update and add information to the release or submit reports
 @requires_csrf_token
 def release(request, pk):
-    ctx = get_ctx()
+    ctx = get_ctx(request)
     # View logic here
     return render(request, 'music/release.html', context = ctx)
 
