@@ -3,9 +3,13 @@ from django.contrib.auth.models import User
 
 class Artist(models.Model):
     name = models.CharField(max_length = 100)
-    cover_art = models.ImageField(upload_to="artists", null=True)
+    artist_photo = models.ImageField(upload_to="artists", null=True)
     time_added = models.DateTimeField() # For sorting by recent in the browse artists page
     added_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True) # When a user account is deleted we don't want the info they added to also be deleted
+    accent_color1 = models.CharField(max_length = 10, blank=True) # Stored as a hex string. Ex. #FFFFFF
+    accent_color2 = models.CharField(max_length = 10, blank=True) 
+    accent_color3 = models.CharField(max_length = 10, blank=True) 
+    accent_color4 = models.CharField(max_length = 10, blank=True) 
 
 class Song(models.Model):
     title = models.CharField(max_length = 100)
@@ -15,8 +19,9 @@ class Song(models.Model):
     added_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
 
 class Review(models.Model):
+    choices = [(1, 1), (2, 2), (3, 3), (4, 4), (5, 5), (6, 6), (7, 7), (8, 8), (9, 9), (10, 10)]
     content = models.TextField(blank=True)
-    score = models.IntegerField() # 0 - 10 score
+    score = models.IntegerField(choices=choices) # 0 - 10 score
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     time = models.DateTimeField()
 

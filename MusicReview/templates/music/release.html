@@ -46,8 +46,16 @@
     </table>
 
     <h3>{{reviews|length}} Reviews</h3>
+
+    <form action="{% url 'release' pk=release.pk %}" method="post" class="form">
+      {% csrf_token %} {% for field in reviewForm %}
+      <div class="form-group">{{field}}</div>
+      {% endfor %}
+      <input class="btn btn-dark mb-4" type="submit" value="Submit" />
+    </form>
+
     {% for review in reviews %}
-    <div class="p-3 bg-dark rounded">
+    <div class="p-3 bg-dark rounded mb-2">
       <div style="display: flex; justify-content: space-between">
         <b>{{ review.user.username }}</b>
         <p style="margin-left: auto">{{ review.score }}/10</p>

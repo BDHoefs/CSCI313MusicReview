@@ -4,15 +4,20 @@ from statistics import mean
 from django.shortcuts import render, redirect
 from django.views.decorators.csrf import requires_csrf_token
 from django.contrib.auth import authenticate, login, logout
+from django.utils import timezone
 
 from PIL import Image
 
 from .accent_colors import default_colors, calculate_accent_colors
-from .forms import ImageColorForm, SearchForm, CreateUserForm, LoginForm
+from .forms import ImageColorForm, SearchForm, CreateUserForm, LoginForm, ReviewForm
 from .models import Release
 
-def get_ctx(request):
-    ctx = { "accentColors": default_colors(), "searchForm": SearchForm() }
+def get_ctx(request, release=None):
+    ctx = { "searchForm": SearchForm() }
+    if release is not None:
+        ctx["accentColors"] = [release.accent_color1, release.accent_color2, release.accent_color3, release.accent_color4]
+    else:
+        ctx["accentColors"] = default_colors()
     if request.user.is_authenticated:
         ctx["userName"] = request.user.username
 
@@ -75,18 +80,25 @@ def browse_releases(request):
     # View logic here
     return render(request, 'music/browse_releases.html', context = ctx)
 
-@requires_csrf_token
+def add_artist(request):
+    ctx = get_ctx(request)
+    # View logic here
+    return render(request, 'music/add_artist.html', context = ctx)
+
+def add_release(request):
+    ctx = get_ctx(request)
+    # View logic here
+    return render(request, 'music/add_release.html', context = ctx)
+
 def search(request):
     ctx = get_ctx(request)
     # View logic here
     return render(request, 'music/search.html', context = ctx)
 
-# CSRF Token because a user may submit forms to this view to update and add information to the release or submit reports
-@requires_csrf_token
 def release(request, pk):
-    ctx = get_ctx(request)
-
     release = Release.objects.get(pk=pk)
+    ctx = get_ctx(request, release=release)
+
     ctx["release"] = release
 
     songs = release.songs.all()
@@ -102,10 +114,28 @@ def release(request, pk):
     else:
         ctx["averageRating"] = "Not reviewed yet"
 
+    if request.method == 'POST':
+        if not request.user.is_authenticated:
+            return redirect('register')
+        review_form = ReviewForm(request.POST)
+        if review_form.is_valid():
+            review = review_form.save(commit=False)
+            review.user = request.user
+            review.time = timezone.now()
+            review.save()
+            release.reviews.add(review)
+            # Redirect because ctx["reviews"] is now out of date
+            return redirect('release', pk=pk)
+        else:
+            ctx['errMessages'] = ["Error submitting review"]
+
+    ctx["reviewForm"] = ReviewForm()
+
     return render(request, 'music/release.html', context = ctx)
 
-# CSRF Token because a user may submit forms to this view to update and add information to the artist or submit reports
-@requires_csrf_token
+def release_add_track(request, pk):
+    ctx = get_ctx(request)
+
 def artist(request, pk):
     ctx = get_ctx(request)
     # View logic here
@@ -116,15 +146,12 @@ def user(request, pk):
     # View logic here
     return render(request, 'accounts/user.html', context = ctx)
 
-# CSRF Token because the admin may submit forms to this view to make content moderation decisions
-@requires_csrf_token
 def admin_reports(request):
     ctx = { "userId": 0, "accentColors": default_colors(), "searchForm": SearchForm() }
     # Validate that the user is an admin
     # View logic here
     return render(request, 'admin/reports.html', context = ctx)
 
-@requires_csrf_token
 def accent_colors_test(request):
     ctx = get_ctx(request)
     ctx["imageForm"] = ImageColorForm()
