@@ -1,0 +1,17 @@
+<select multiple="multiple" style="width: 60%" name="{{ name }}">
+  {% for value, label in choices %}
+  <option value="{{ value }}">{{ label }}</option>
+  {% endfor %}
+</select>
+<script>
+  $(document).ready(function() {
+    $('select[name="{{ name }}"]').select2({ {% if tags %}
+      tags: true,
+      language: {
+        noResults: function() {
+          return "";
+        }
+      }
+    {% endif %} });
+  });
+</script>

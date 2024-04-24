@@ -1,8 +1,11 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
+
+from django.forms import inlineformset_factory
 from django.contrib.auth.models import User
 
-from .models import Review
+from .models import Review, Release, Artist, Song
+from .widgets import Select2Widget
 
 class ImageColorForm(forms.Form):
     image = forms.ImageField()
@@ -26,3 +29,10 @@ class ReviewForm(forms.ModelForm):
         widgets = {
             'score': forms.Select(),
         }
+
+class ReleaseForm(forms.ModelForm):
+    class Meta:
+        model = Release
+        fields = ['title', 'cover_art', 'release_type', 'genres', 'is_explicit', 'artists']
+        widgets = {'genres': Select2Widget(tags=True), 'artists': Select2Widget()}
+

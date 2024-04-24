@@ -10,25 +10,29 @@ class Artist(models.Model):
     accent_color2 = models.CharField(max_length = 10, blank=True) 
     accent_color3 = models.CharField(max_length = 10, blank=True) 
     accent_color4 = models.CharField(max_length = 10, blank=True) 
+    def __str__(self):
+        return self.name
 
 class Song(models.Model):
     title = models.CharField(max_length = 100)
     length = models.IntegerField(null = True) # Song length in seconds
-    is_explicit = models.BooleanField(),
+    is_explicit = models.BooleanField()
     artists = models.ManyToManyField(Artist)
     added_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    def __str__(self):
+        return self.title
 
 class Review(models.Model):
-    choices = [(1, 1), (2, 2), (3, 3), (4, 4), (5, 5), (6, 6), (7, 7), (8, 8), (9, 9), (10, 10)]
     content = models.TextField(blank=True)
-    score = models.IntegerField(choices=choices) # 0 - 10 score
+    score = models.IntegerField(choices=[(x, x) for x in range(1, 11)]) # 0 - 10 score
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     time = models.DateTimeField()
 
 class Release(models.Model):
+    release_types = [("EP", "EP"), ("Album", "Album"), ("Mixtape", "Mixtape"), ("Single", "Single"), ("Compilation", "Compilation"), ("Soundtrack", "Soundtrack"), ("Live performance", "Live performance")]
     title = models.CharField(max_length = 100)
     cover_art = models.ImageField(upload_to="cover_art")
-    release_type = models.CharField(max_length = 100)
+    release_type = models.CharField(max_length = 100, choices=release_types)
     genres = models.CharField(max_length = 1000)
     is_explicit = models.BooleanField()
     songs = models.ManyToManyField(Song)
@@ -36,12 +40,14 @@ class Release(models.Model):
     reviews = models.ManyToManyField(Review, blank=True)
     last_reviewed = models.DateTimeField(blank=True, null=True) # For sorting by last reviewed in the browse page
     time_added = models.DateTimeField() # For sorting by recent in the browse page
-    released = models.DateField(null=True),
+    released = models.DateField(null=True)
     added_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True) 
     accent_color1 = models.CharField(max_length = 10, blank=True) # Stored as a hex string. Ex. #FFFFFF
     accent_color2 = models.CharField(max_length = 10, blank=True) 
     accent_color3 = models.CharField(max_length = 10, blank=True) 
     accent_color4 = models.CharField(max_length = 10, blank=True) 
+    def __str__(self):
+        return self.title
 
 class ReportArtistInfo(models.Model):
     artist = models.ForeignKey(Artist, on_delete=models.CASCADE)

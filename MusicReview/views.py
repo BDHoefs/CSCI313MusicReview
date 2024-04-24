@@ -9,7 +9,7 @@ from django.utils import timezone
 from PIL import Image
 
 from .accent_colors import default_colors, calculate_accent_colors
-from .forms import ImageColorForm, SearchForm, CreateUserForm, LoginForm, ReviewForm
+from .forms import ImageColorForm, SearchForm, CreateUserForm, LoginForm, ReviewForm, ReleaseForm
 from .models import Release
 
 def get_ctx(request, release=None):
@@ -87,7 +87,29 @@ def add_artist(request):
 
 def add_release(request):
     ctx = get_ctx(request)
-    # View logic here
+
+    if request.method == 'POST':
+        if not request.user.is_authenticated:
+            return redirect('register')
+        release_form = ReleaseForm(request.POST, request.FILES)
+        if release_form.is_valid(): 
+            image = Image.open(release_form.cleaned_data["cover_art"])
+            accent_colors = calculate_accent_colors(image)
+
+            release = release_form.save(commit=False)
+            release.accent_color1 = accent_colors[0]
+            release.accent_color2 = accent_colors[1]
+            release.accent_color3 = accent_colors[2]
+            release.accent_color4 = accent_colors[3]
+            release.time_added = timezone.now()
+            release.added_by = request.user
+            release.save()
+            release.artists.set(release_form.cleaned_data["artists"])
+
+            return redirect('release', pk=release.pk)
+
+
+    ctx["releaseForm"] = ReleaseForm()
     return render(request, 'music/add_release.html', context = ctx)
 
 def search(request):
@@ -100,6 +122,8 @@ def release(request, pk):
     ctx = get_ctx(request, release=release)
 
     ctx["release"] = release
+    # Formats the "genres" field into a simple comma separated list
+    ctx["genres"] = ', '.join([s.strip("'") for s in release.genres.strip("[]").split(', ')])
 
     songs = release.songs.all()
     song_lengths = [(song.title, str(timedelta(seconds=song.length)).lstrip("0:")) for song in songs if song.length is not None]
