@@ -41,3 +41,12 @@ class TrackForm(forms.ModelForm):
         model = Song
         fields = ['title', 'length', 'is_explicit', 'artists']
         widgets = {'artists': Select2Widget(), 'length': IntegerTime() }
+
+class ArtistForm(forms.ModelForm):
+    class Meta:
+        model = Artist
+        fields = ['name', 'artist_photo']
+
+class ReleaseSort(forms.Form):
+    choices = [("Recently added", "Recently added"), ("Recently reviewed", "Recently reviewed")]
+    sort = forms.ChoiceField(choices=choices)

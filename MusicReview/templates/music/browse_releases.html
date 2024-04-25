@@ -1,6 +1,36 @@
-{% extends 'master.html' %} {% block title %}
-  Browse Releases - MusicReview
-{% endblock %}
-{% block content %}
-  <h1>This is the browse releases page!</h1>
+{% extends 'master.html' %} {% block title %} Browse Releases - MusicReview
+{%endblock %} {% block content %}
+<div class="container">
+  <h1>Browse Releases</h1>
+
+  <form method="post">
+    {% csrf_token %}
+    <div class="form-group">
+      <div class="d-inline-block">{{ sortForm.as_p }}</div>
+      <button type="submit" class="btn btn-dark">Sort</button>
+    </div>
+  </form>
+  <a href="{% url 'add_release' %}" class="btn btn-dark mb-3">Add Release</a>
+  <div class="row">
+    {% for row in releases %} {% for release in row %}
+    <div class="col-md-4">
+      <div class="card mb-4">
+        <a href="{% url 'release' release.pk %}">
+          <img
+            src="{{ release.cover_art.url }}"
+            alt="{{ release.title }}"
+            class="card-img-top"
+          />
+        </a>
+        <div class="card-body">
+          <div class="d-inline-block">
+            <h5 class="card-title text-dark">{{ release.title }}</h5>
+            <h5 class="card-title text-dark">{{ release.str_score }}</h5>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endfor %} {% endfor %}
+  </div>
+</div>
 {% endblock %}

@@ -1,4 +1,14 @@
 {% extends 'master.html' %} {% block title %} Add Artist - MusicReview
 {%endblock %} {% block content %}
 <h1>Add artist</h1>
+<form method="POST" enctype="multipart/form-data">
+  {% csrf_token %} {% for field in artistForm %}
+  <div class="form-group">
+    <label style="width: 200px; text-align: right">{{field.label}}</label>
+    {{field}}
+  </div>
+  {% endfor %}
+  <input class="btn btn-dark" type="submit" value="Submit" />
+</form>
+
 {% endblock %}

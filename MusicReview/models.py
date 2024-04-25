@@ -1,3 +1,5 @@
+from statistics import mean
+
 from django.db import models
 from django.contrib.auth.models import User
 
@@ -46,6 +48,20 @@ class Release(models.Model):
     accent_color2 = models.CharField(max_length = 10, blank=True) 
     accent_color3 = models.CharField(max_length = 10, blank=True) 
     accent_color4 = models.CharField(max_length = 10, blank=True) 
+    def score(self):
+        reviews = self.reviews.all()
+        if reviews.count() > 0:
+            return mean([review.score for review in reviews])
+        else:
+            return None
+        
+    def str_score(self):
+        score = self.score()
+        if score is not None:
+            return str(score) + '/10'
+        else:
+            return "No reviews"
+
     def __str__(self):
         return self.title
 

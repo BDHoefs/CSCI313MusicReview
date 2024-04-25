@@ -1,5 +1,4 @@
 from datetime import timedelta
-from statistics import mean
 
 from django.shortcuts import render, redirect
 from django.views.decorators.csrf import requires_csrf_token
@@ -9,7 +8,7 @@ from django.utils import timezone
 from PIL import Image
 
 from .accent_colors import default_colors, calculate_accent_colors
-from .forms import ImageColorForm, SearchForm, CreateUserForm, LoginForm, ReviewForm, ReleaseForm, TrackForm
+from .forms import ImageColorForm, SearchForm, CreateUserForm, LoginForm, ReviewForm, ReleaseForm, TrackForm, ReleaseSort, ArtistForm
 from .models import Release
 
 def get_ctx(request, release=None):
@@ -38,10 +37,6 @@ def release_ctx(request, release):
 
     reviews = release.reviews.all()
     ctx["reviews"] = reviews
-    if reviews.count() > 0:
-        ctx["averageRating"] = str(mean([review.score for review in reviews])) + '/10'
-    else:
-        ctx["averageRating"] = "Not reviewed yet"
 
     return ctx
 
@@ -99,12 +94,53 @@ def browse_artists(request):
 
 def browse_releases(request):
     ctx = get_ctx(request)
-    # View logic here
+    sort = "Recently added"
+
+    if request.method == 'POST':
+        sort_form = ReleaseSort(request.POST)
+        if sort_form.is_valid():
+            sort = sort_form.cleaned_data["sort"]
+
+    sort_form = ReleaseSort()
+    ctx["sortForm"] = sort_form
+
+    if sort == "Recently added":
+        ctx["releases"] = Release.objects.order_by("time_added")[:100]
+    elif sort == "Recently reviewed":
+        ctx["releases"] = Release.objects.order_by("last_reviewed")[:100]
+
+    # Turn releases into a 2d array with 3 elements per row
+    if ctx["releases"] is not None:
+        releases = ctx["releases"]
+        ctx["releases"] = [releases[i:i+3] for i in range(0, len(releases), 3)]
+
+    print(ctx["releases"])
+
     return render(request, 'music/browse_releases.html', context = ctx)
 
 def add_artist(request):
     ctx = get_ctx(request)
-    # View logic here
+
+    if request.method == 'POST':
+        if not request.user.is_authenticated:
+            return redirect('register')
+        artist_form = ArtistForm(request.POST, request.FILES)
+        if artist_form.is_valid():
+            image = Image.open(artist_form.cleaned_data["artist_photo"])
+            accent_colors = calculate_accent_colors(image)
+
+            artist = artist_form.save(commit=False)
+            artist.accent_color1 = accent_colors[0]
+            artist.accent_color2 = accent_colors[1]
+            artist.accent_color3 = accent_colors[2]
+            artist.accent_color4 = accent_colors[3]
+            artist.time_added = timezone.now()
+            artist.added_by = request.user
+            artist.save()
+
+            return redirect('artist', pk=artist.pk)
+        
+    ctx["artistForm"] = ArtistForm()
     return render(request, 'music/add_artist.html', context = ctx)
 
 def add_release(request):
@@ -152,7 +188,10 @@ def release(request, pk):
             review.user = request.user
             review.time = timezone.now()
             review.save()
+
             release.reviews.add(review)
+            release.last_reviewed = timezone.now()
+            release.save()
             # Redirect because ctx["reviews"] is now out of date
             return redirect('release', pk=pk)
         else:

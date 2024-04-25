@@ -8,7 +8,12 @@
     {{field}}
   </div>
   {% endfor %}
-  <input class="btn btn-dark" type="submit" value="Submit" />
+  <div>
+    <input class="btn btn-dark" type="submit" value="Submit" />
+    <div class="float-right">
+      <a href="{% url 'add_artist' %}" class="btn btn-dark">Add Artist</a>
+    </div>
+  </div>
 </form>
 
 {% endblock %}
