@@ -9,7 +9,7 @@ from django.utils import timezone
 from PIL import Image
 
 from .accent_colors import default_colors, calculate_accent_colors
-from .forms import ImageColorForm, SearchForm, CreateUserForm, LoginForm, ReviewForm, ReleaseForm
+from .forms import ImageColorForm, SearchForm, CreateUserForm, LoginForm, ReviewForm, ReleaseForm, TrackForm
 from .models import Release
 
 def get_ctx(request, release=None):
@@ -20,6 +20,28 @@ def get_ctx(request, release=None):
         ctx["accentColors"] = default_colors()
     if request.user.is_authenticated:
         ctx["userName"] = request.user.username
+
+    return ctx
+
+def release_ctx(request, release):
+    ctx = get_ctx(request, release=release)
+    ctx["release"] = release
+
+    # Formats the "genres" field into a simple comma separated list
+    ctx["genres"] = ', '.join([s.strip("'") for s in release.genres.strip("[]").split(', ')])
+
+    songs = release.songs.all()
+    song_lengths = [(song.title, str(timedelta(seconds=song.length)).lstrip("0:")) for song in songs if song.length is not None]
+    ctx["songLengths"] = song_lengths
+
+    ctx["artists"] = ', '.join([artist.name for artist in release.artists.all()])
+
+    reviews = release.reviews.all()
+    ctx["reviews"] = reviews
+    if reviews.count() > 0:
+        ctx["averageRating"] = str(mean([review.score for review in reviews])) + '/10'
+    else:
+        ctx["averageRating"] = "Not reviewed yet"
 
     return ctx
 
@@ -118,25 +140,8 @@ def search(request):
     return render(request, 'music/search.html', context = ctx)
 
 def release(request, pk):
-    release = Release.objects.get(pk=pk)
-    ctx = get_ctx(request, release=release)
-
-    ctx["release"] = release
-    # Formats the "genres" field into a simple comma separated list
-    ctx["genres"] = ', '.join([s.strip("'") for s in release.genres.strip("[]").split(', ')])
-
-    songs = release.songs.all()
-    song_lengths = [(song.title, str(timedelta(seconds=song.length)).lstrip("0:")) for song in songs if song.length is not None]
-    ctx["songLengths"] = song_lengths
-
-    ctx["artists"] = ', '.join([artist.name for artist in release.artists.all()])
-
-    reviews = release.reviews.all()
-    ctx["reviews"] = reviews
-    if reviews.count() > 0:
-        ctx["averageRating"] = str(mean([review.score for review in reviews])) + '/10'
-    else:
-        ctx["averageRating"] = "Not reviewed yet"
+    release = Release.objects.get(pk=pk)    
+    ctx = release_ctx(request, release)
 
     if request.method == 'POST':
         if not request.user.is_authenticated:
@@ -158,7 +163,23 @@ def release(request, pk):
     return render(request, 'music/release.html', context = ctx)
 
 def release_add_track(request, pk):
-    ctx = get_ctx(request)
+    release = Release.objects.get(pk=pk)    
+    ctx = release_ctx(request, release)
+
+    if request.method == 'POST':
+        if not request.user.is_authenticated:
+            return redirect('register')
+        track_form = TrackForm(request.POST)
+        if track_form.is_valid():
+            track = track_form.save()
+            release.songs.add(track)
+            return redirect('release', pk=pk)
+        else:
+            ctx['errMessages'] = ['Error submitting track']
+
+    ctx["trackForm"] = TrackForm()
+
+    return render(request, 'music/release.html', context=ctx)
 
 def artist(request, pk):
     ctx = get_ctx(request)

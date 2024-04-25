@@ -15,7 +15,21 @@
       </tr>
       {% endfor %}
     </table>
-    <a class="text-center" href="#">Missing tracks?</a>
+    {% if trackForm is None %}
+    <a class="text-center" href="{% url 'release_add_track' pk=release.pk %}"
+      >Missing tracks?</a
+    >
+    {% else %}
+    <form method="POST">
+      {% csrf_token %} {% for field in trackForm %}
+      <div class="form-group">
+        <label>{{field.label}}</label>
+        {{field}}
+      </div>
+      {% endfor %}
+      <input class="btn btn-dark" type="submit" value="Submit" />
+      {% endif %}
+    </form>
   </div>
 
   <div class="flex-grow-1 ml-4">
@@ -45,6 +59,7 @@
       </tr>
     </table>
 
+    {% if reviewForm is None %} {% else %}
     <h3>{{reviews|length}} Reviews</h3>
 
     <form action="{% url 'release' pk=release.pk %}" method="post" class="form">
@@ -53,8 +68,7 @@
       {% endfor %}
       <input class="btn btn-dark mb-4" type="submit" value="Submit" />
     </form>
-
-    {% for review in reviews %}
+    {% endif %} {% for review in reviews %}
     <div class="p-3 bg-dark rounded mb-2">
       <div style="display: flex; justify-content: space-between">
         <b>{{ review.user.username }}</b>

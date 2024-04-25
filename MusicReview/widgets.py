@@ -20,7 +20,26 @@ class Select2Widget(Widget):
         return render_to_string(self.template_name, context)
     
     def value_from_datadict(self, data, files, name):
-        value = data.getlist(name)
-        print(value)
-
         return data.getlist(name)
+    
+class IntegerTime(Widget):
+    template_name = 'widgets/time.html'
+
+    def __init__(self, attrs=None, choices=(), *args, **kwargs):
+        self.choices = choices
+        super().__init__(attrs)
+
+    def render(self, name, value, attrs=None, renderer=None):
+        context = {
+            'name': name,
+            'attrs': self.build_attrs(attrs) if attrs else None,
+            'choices': self.choices,
+        }
+
+        return render_to_string(self.template_name, context)
+    
+    def value_from_datadict(self, data, files, name):
+        minutes = int(data.getlist(name + "_minutes")[0])
+        seconds = int(data.getlist(name + "_seconds")[0])
+
+        return minutes * 60 + seconds
