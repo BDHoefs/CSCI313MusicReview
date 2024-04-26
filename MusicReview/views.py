@@ -12,31 +12,31 @@ from .forms import ImageColorForm, SearchForm, CreateUserForm, LoginForm, Review
 from .models import Release
 
 def get_ctx(request, release=None):
-    ctx = { "searchForm": SearchForm() }
+    ctx = { 'searchForm': SearchForm() }
     if release is not None:
-        ctx["accentColors"] = [release.accent_color1, release.accent_color2, release.accent_color3, release.accent_color4]
+        ctx['accentColors'] = [release.accent_color1, release.accent_color2, release.accent_color3, release.accent_color4]
     else:
-        ctx["accentColors"] = default_colors()
+        ctx['accentColors'] = default_colors()
     if request.user.is_authenticated:
-        ctx["userName"] = request.user.username
+        ctx['userName'] = request.user.username
 
     return ctx
 
 def release_ctx(request, release):
     ctx = get_ctx(request, release=release)
-    ctx["release"] = release
+    ctx['release'] = release
 
-    # Formats the "genres" field into a simple comma separated list
-    ctx["genres"] = ', '.join([s.strip("'") for s in release.genres.strip("[]").split(', ')])
+    # Formats the 'genres' field into a simple comma separated list
+    ctx['genres'] = ', '.join([s.strip("'") for s in release.genres.strip('[]').split(', ')])
 
     songs = release.songs.all()
-    song_lengths = [(song.title, str(timedelta(seconds=song.length)).lstrip("0:")) for song in songs if song.length is not None]
-    ctx["songLengths"] = song_lengths
+    song_lengths = [(song.title, str(timedelta(seconds=song.length)).lstrip('0:')) for song in songs if song.length is not None]
+    ctx['songLengths'] = song_lengths
 
-    ctx["artists"] = ', '.join([artist.name for artist in release.artists.all()])
+    ctx['artists'] = ', '.join([artist.name for artist in release.artists.all()])
 
     reviews = release.reviews.all()
-    ctx["reviews"] = reviews
+    ctx['reviews'] = reviews
 
     return ctx
 
@@ -60,7 +60,7 @@ def logon(request):
                 login(request, user)
                 return redirect('home')
             else:
-                ctx["errMessages"] = ["Username or password incorrect"]
+                ctx['errMessages'] = ['Username or password incorrect']
 
     ctx['loginForm'] = form
     return render(request, 'accounts/login.html', context = ctx)
@@ -94,27 +94,27 @@ def browse_artists(request):
 
 def browse_releases(request):
     ctx = get_ctx(request)
-    sort = "Recently added"
+    sort = 'Recently added'
 
     if request.method == 'POST':
         sort_form = ReleaseSort(request.POST)
         if sort_form.is_valid():
-            sort = sort_form.cleaned_data["sort"]
+            sort = sort_form.cleaned_data['sort']
 
     sort_form = ReleaseSort()
-    ctx["sortForm"] = sort_form
+    ctx['sortForm'] = sort_form
 
-    if sort == "Recently added":
-        ctx["releases"] = Release.objects.order_by("time_added")[:100]
-    elif sort == "Recently reviewed":
-        ctx["releases"] = Release.objects.order_by("last_reviewed")[:100]
+    if sort == 'Recently added':
+        ctx['releases'] = Release.objects.order_by('time_added')[:100]
+    elif sort == 'Recently reviewed':
+        ctx['releases'] = Release.objects.order_by('last_reviewed')[:100]
 
     # Turn releases into a 2d array with 3 elements per row
-    if ctx["releases"] is not None:
-        releases = ctx["releases"]
-        ctx["releases"] = [releases[i:i+3] for i in range(0, len(releases), 3)]
+    if ctx['releases'] is not None:
+        releases = ctx['releases']
+        ctx['releases'] = [releases[i:i+3] for i in range(0, len(releases), 3)]
 
-    print(ctx["releases"])
+    print(ctx['releases'])
 
     return render(request, 'music/browse_releases.html', context = ctx)
 
@@ -126,7 +126,7 @@ def add_artist(request):
             return redirect('register')
         artist_form = ArtistForm(request.POST, request.FILES)
         if artist_form.is_valid():
-            image = Image.open(artist_form.cleaned_data["artist_photo"])
+            image = Image.open(artist_form.cleaned_data['artist_photo'])
             accent_colors = calculate_accent_colors(image)
 
             artist = artist_form.save(commit=False)
@@ -140,7 +140,7 @@ def add_artist(request):
 
             return redirect('artist', pk=artist.pk)
         
-    ctx["artistForm"] = ArtistForm()
+    ctx['artistForm'] = ArtistForm()
     return render(request, 'music/add_artist.html', context = ctx)
 
 def add_release(request):
@@ -151,7 +151,7 @@ def add_release(request):
             return redirect('register')
         release_form = ReleaseForm(request.POST, request.FILES)
         if release_form.is_valid(): 
-            image = Image.open(release_form.cleaned_data["cover_art"])
+            image = Image.open(release_form.cleaned_data['cover_art'])
             accent_colors = calculate_accent_colors(image)
 
             release = release_form.save(commit=False)
@@ -162,12 +162,12 @@ def add_release(request):
             release.time_added = timezone.now()
             release.added_by = request.user
             release.save()
-            release.artists.set(release_form.cleaned_data["artists"])
+            release.artists.set(release_form.cleaned_data['artists'])
 
             return redirect('release', pk=release.pk)
 
 
-    ctx["releaseForm"] = ReleaseForm()
+    ctx['releaseForm'] = ReleaseForm()
     return render(request, 'music/add_release.html', context = ctx)
 
 def search(request):
@@ -192,12 +192,12 @@ def release(request, pk):
             release.reviews.add(review)
             release.last_reviewed = timezone.now()
             release.save()
-            # Redirect because ctx["reviews"] is now out of date
+            # Redirect because ctx['reviews'] is now out of date
             return redirect('release', pk=pk)
         else:
-            ctx['errMessages'] = ["Error submitting review"]
+            ctx['errMessages'] = ['Error submitting review']
 
-    ctx["reviewForm"] = ReviewForm()
+    ctx['reviewForm'] = ReviewForm()
 
     return render(request, 'music/release.html', context = ctx)
 
@@ -216,7 +216,7 @@ def release_add_track(request, pk):
         else:
             ctx['errMessages'] = ['Error submitting track']
 
-    ctx["trackForm"] = TrackForm()
+    ctx['trackForm'] = TrackForm()
 
     return render(request, 'music/release.html', context=ctx)
 
@@ -231,18 +231,18 @@ def user(request, pk):
     return render(request, 'accounts/user.html', context = ctx)
 
 def admin_reports(request):
-    ctx = { "userId": 0, "accentColors": default_colors(), "searchForm": SearchForm() }
+    ctx = { 'userId': 0, 'accentColors': default_colors(), 'searchForm': SearchForm() }
     # Validate that the user is an admin
     # View logic here
     return render(request, 'admin/reports.html', context = ctx)
 
 def accent_colors_test(request):
     ctx = get_ctx(request)
-    ctx["imageForm"] = ImageColorForm()
-    if request.method == "POST":
-        ctx["imageForm"] = ImageColorForm(request.POST, request.FILES)
-        if ctx["imageForm"].is_valid():
-            image = Image.open(ctx["imageForm"].cleaned_data["image"])
-            ctx["accentColors"] = calculate_accent_colors(image)
+    ctx['imageForm'] = ImageColorForm()
+    if request.method == 'POST':
+        ctx['imageForm'] = ImageColorForm(request.POST, request.FILES)
+        if ctx['imageForm'].is_valid():
+            image = Image.open(ctx['imageForm'].cleaned_data['image'])
+            ctx['accentColors'] = calculate_accent_colors(image)
 
     return render(request, 'accent_colors.html', ctx)

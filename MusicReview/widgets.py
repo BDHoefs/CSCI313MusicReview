@@ -39,7 +39,7 @@ class IntegerTime(Widget):
         return render_to_string(self.template_name, context)
     
     def value_from_datadict(self, data, files, name):
-        minutes = int(data.getlist(name + "_minutes")[0])
-        seconds = int(data.getlist(name + "_seconds")[0])
+        minutes = int(data.getlist(name + '_minutes')[0])
+        seconds = int(data.getlist(name + '_seconds')[0])
 
         return minutes * 60 + seconds

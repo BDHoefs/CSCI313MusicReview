@@ -71,12 +71,6 @@ class ReportArtistInfo(models.Model):
     reported_by = models.ForeignKey(User, on_delete=models.CASCADE)
     report_time = models.DateTimeField(),
 
-class ReportSongInfo(models.Model):
-    song = models.ForeignKey(Song, on_delete=models.CASCADE)
-    report_text = models.TextField()
-    reported_by = models.ForeignKey(User, on_delete=models.CASCADE)
-    report_time = models.DateTimeField(),
-
 class ReportReviewContent(models.Model):
     review = models.ForeignKey(Review, on_delete=models.CASCADE)
     report_text = models.TextField()
