@@ -1,4 +1,40 @@
-{% extends 'master.html' %} {% block title %} Search - MusicReview {% endblock%}
+
+{% extends 'master.html' %}
+
+{% block title %}Browse Releases - MusicReview{% endblock %}
+
 {% block content %}
-<h1>This is the search page!</h1>
+<div class="container">
+  <form method="GET" class="mb-4">
+    <div class="input-group">
+      <input type="text" class="form-control" placeholder="Search releases..." name="search" value="{{ query }}">
+      <div class="input-group-append">
+        <button class="btn btn-outline-secondary" type="submit">Search</button>
+      </div>
+    </div>
+  </form>
+
+  <h1>Search Results</h1>
+  <div class="row">
+    {% for release in releases %}
+    <div class="col-md-4">
+      <div class="card mb-4">
+        <a href="{% url 'release' release.pk %}">
+          <img src="{{ release.cover_art.url }}" alt="{{ release.title }}" class="card-img-top" />
+        </a>
+        <div class="card-body">
+          <div class="d-inline-block">
+            <h5 class="card-title text-dark">{{ release.title }}</h5>
+            <h5 class="card-title text-dark">{{ release.str_score }}</h5>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% empty %}
+    <div class="col-md-12">
+      <p>No results found.</p>
+    </div>
+    {% endfor %}
+  </div>
+</div>
 {% endblock %}

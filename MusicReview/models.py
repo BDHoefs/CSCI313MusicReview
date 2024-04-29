@@ -69,16 +69,16 @@ class ReportArtistInfo(models.Model):
     artist = models.ForeignKey(Artist, on_delete=models.CASCADE)
     report_text = models.TextField()
     reported_by = models.ForeignKey(User, on_delete=models.CASCADE)
-    report_time = models.DateTimeField(),
+    report_time = models.DateTimeField()
 
 class ReportReviewContent(models.Model):
     review = models.ForeignKey(Review, on_delete=models.CASCADE)
     report_text = models.TextField()
     reported_by = models.ForeignKey(User, on_delete=models.CASCADE)
-    report_time = models.DateTimeField(),
+    report_time = models.DateTimeField()
 
 class ReportReleaseInfo(models.Model):
     release = models.ForeignKey(Release, on_delete=models.CASCADE)
     report_text = models.TextField()
     reported_by = models.ForeignKey(User, on_delete=models.CASCADE)
-    report_time = models.DateTimeField(),
+    report_time = models.DateTimeField()

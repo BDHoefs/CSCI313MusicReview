@@ -33,7 +33,29 @@
   </div>
 
   <div class="flex-grow-1 ml-4">
-    <h1>{{release.title}}</h1>
+    <div>
+      <h1 style="display: inline">{{release.title}}</h1>
+      {% if reportReleaseForm is None %}
+      <div class="float-right">
+        <a
+          href="{% url 'report_release' pk=release.pk %}"
+          class="btn btn-danger"
+          >Report release</a
+        >
+      </div>
+      {% else %}
+      <form method="POST">
+        {% csrf_token %} {% for field in reportReleaseForm %}
+        <p>{{ field }}</p>
+        {%endfor %}
+        <input
+          class="btn btn-danger mb-4"
+          type="submit"
+          value="Submit report"
+        />
+      </form>
+      {% endif %}
+    </div>
     <table class="table">
       <tr>
         <td>Artists</td>
@@ -75,6 +97,24 @@
         <p style="margin-left: auto">{{ review.score }}/10</p>
       </div>
       <p>{{review.content}}</p>
+
+      {% if review.pk == reportReview.pk %}
+      <form method="POST">
+        {% csrf_token %} {% for field in reportReviewForm %}
+        <p>{{ field }}</p>
+        {%endfor %}
+        <input
+          class="btn btn-danger mb-4"
+          type="submit"
+          value="Submit report"
+        />
+      </form>
+      {% else %}
+      <a
+        href="{% url 'report_review' review_pk=review.pk release_pk=release.pk %}"
+        >Report review</a
+      >
+      {% endif %}
     </div>
     {% endfor %}
   </div>

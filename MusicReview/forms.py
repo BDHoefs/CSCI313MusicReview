@@ -4,7 +4,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.forms import inlineformset_factory
 from django.contrib.auth.models import User
 
-from .models import Review, Release, Artist, Song
+from .models import Review, Release, Artist, Song, ReportReleaseInfo, ReportReviewContent
 from .widgets import Select2Widget, IntegerTime
 
 class ImageColorForm(forms.Form):
@@ -50,3 +50,14 @@ class ArtistForm(forms.ModelForm):
 class ReleaseSort(forms.Form):
     choices = [("Recently added", "Recently added"), ("Recently reviewed", "Recently reviewed")]
     sort = forms.ChoiceField(choices=choices)
+
+class ReportReleaseForm(forms.ModelForm):
+    class Meta:
+        model = ReportReleaseInfo
+        fields = [ 'report_text' ]
+
+class ReportReviewForm(forms.ModelForm):
+    class Meta:
+        model = ReportReviewContent
+        fields = ['report_text']
+        

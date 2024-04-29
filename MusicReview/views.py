@@ -8,8 +8,8 @@ from django.utils import timezone
 from PIL import Image
 
 from .accent_colors import default_colors, calculate_accent_colors
-from .forms import ImageColorForm, SearchForm, CreateUserForm, LoginForm, ReviewForm, ReleaseForm, TrackForm, ReleaseSort, ArtistForm
-from .models import Release
+from .forms import ImageColorForm, SearchForm, CreateUserForm, LoginForm, ReviewForm, ReleaseForm, TrackForm, ReleaseSort, ArtistForm, ReportReleaseForm, ReportReviewForm
+from .models import Release, Review
 
 def get_ctx(request, release=None):
     ctx = { 'searchForm': SearchForm() }
@@ -172,8 +172,14 @@ def add_release(request):
 
 def search(request):
     ctx = get_ctx(request)
-    # View logic here
-    return render(request, 'music/search.html', context = ctx)
+    query = request.GET.get('search')
+    releases = []
+
+    if query:
+        releases = Release.objects.filter(title__icontains=query)
+
+    ctx['releases'] = releases
+    return render(request, 'music/search.html', context=ctx)
 
 def release(request, pk):
     release = Release.objects.get(pk=pk)    
@@ -225,6 +231,54 @@ def artist(request, pk):
     # View logic here
     return render(request, 'music/artist.html', context = ctx)
 
+def report_release(request, pk):
+    release = Release.objects.get(pk=pk)    
+    ctx = release_ctx(request, release)
+
+    if request.method == 'POST':
+        if not request.user.is_authenticated:
+            return redirect('register')
+        report_form = ReportReleaseForm(request.POST)
+        if report_form.is_valid():
+            report = report_form.save(commit = False)
+            report.release = release
+            report.reported_by = request.user
+            report.report_time = timezone.now()
+            report.save()
+            
+            return redirect('release', pk=pk)
+        else:
+            ctx['errMessages'] = ['Error submitting report']
+
+    ctx['reportReleaseForm'] = ReportReleaseForm()
+
+    return render(request, 'music/release.html', context = ctx)
+
+def report_review(request, release_pk, review_pk):
+    release = Release.objects.get(pk=release_pk)
+    review = Review.objects.get(pk=review_pk)
+    ctx = release_ctx(request, release)
+
+    if request.method == 'POST':
+        if not request.user.is_authenticated:
+            return redirect('register')
+        report_form = ReportReviewForm(request.POST)
+        if report_form.is_valid():
+            report = report_form.save(commit = False)
+            report.review = review
+            report.reported_by = request.user
+            report.report_time = timezone.now()
+            report.save()
+
+            return redirect('release', pk=release_pk)
+        else:
+            ctx['errMessages'] = ['Error submitting report']
+
+    ctx['reportReview'] = review
+    ctx['reportReviewForm'] = ReportReviewForm()
+
+    return render(request, 'music/release.html', context = ctx)
+
 def user(request, pk):
     ctx = get_ctx(request)
     # View logic here
@@ -246,3 +300,8 @@ def accent_colors_test(request):
             ctx['accentColors'] = calculate_accent_colors(image)
 
     return render(request, 'accent_colors.html', ctx)
+
+def userPage(user, release):
+    ctx = get_ctx(request)
+    
+    return render(request, 'accounts/user?page.html', context = ctx)
