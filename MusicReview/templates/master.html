@@ -135,7 +135,11 @@
               </li>
               <li class="nav-item mt-3">
                 <a class="nav-link" href="{% url 'user' userName %}">
-                  <div id="profilePhoto"></div>
+                  <img
+                    src="{% static 'user.svg' %}"
+                    width="30px"
+                    height="30px"
+                  />
                 </a>
               </li>
               {% endif %}
