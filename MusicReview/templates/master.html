@@ -72,7 +72,7 @@
       <nav class="navbar-dark" id="sidebar">
         <div id="sidebarContent">
           <a href="{% url 'home' %}">
-            <h3>Home -- Icon goes here --</h3>
+            <img src="{% static 'icon.svg' %}" width="200px" height="100px" />
           </a>
 
           <ul class="nav navbar-nav">
@@ -125,13 +125,21 @@
               <li class="nav-item mt-3">
                 <a class="nav-link" href="{% url 'register' %}">Register</a>
               </li>
-              {% endif %} {% if userName is None %} {% else %}
+              {% endif %} {% if userName is None %} {% else %} {% if superuser%}
+              <li class="nav-item mt-3">
+                <a class="nav-link" href="{% url 'admin_reports' %}">Reports</a>
+              </li>
+              {% endif %}
               <li class="nav-item mt-3">
                 <a class="nav-link" href="{% url 'logout' %}">Log out</a>
               </li>
               <li class="nav-item mt-3">
                 <a class="nav-link" href="{% url 'user' userName %}">
-                  <div id="profilePhoto"></div>
+                  <img
+                    src="{% static 'user.svg' %}"
+                    width="30px"
+                    height="30px"
+                  />
                 </a>
               </li>
               {% endif %}
