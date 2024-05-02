@@ -8,7 +8,7 @@ from django.utils import timezone
 from PIL import Image
 
 from .accent_colors import default_colors, calculate_accent_colors
-from .forms import ImageColorForm, SearchForm, CreateUserForm, LoginForm, ReviewForm, ReleaseForm, TrackForm, ReleaseSort, ArtistForm, ReportReleaseForm, ReportReviewForm
+from .forms import ImageColorForm, SearchForm, CreateUserForm, LoginForm, ReviewForm, ReleaseForm, TrackForm, ReleaseSort, ArtistForm, ReportReleaseInfo, ReportReviewContent
 from .models import Release, Review
 
 def get_ctx(request, release=None):
