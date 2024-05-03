@@ -8,8 +8,8 @@ from django.utils import timezone
 from PIL import Image
 
 from .accent_colors import default_colors, calculate_accent_colors
-from .forms import ImageColorForm, SearchForm, CreateUserForm, LoginForm, ReviewForm, ReleaseForm, TrackForm, ReleaseSort, ArtistForm, ReportReleaseInfo, ReportReviewContent
-from .models import Release, Review, Artist
+from .forms import ImageColorForm, SearchForm, CreateUserForm, LoginForm, ReviewForm, ReleaseForm, TrackForm, ReleaseSort, ArtistForm, ReportReleaseInfo, ReportReviewForm, ReportReleaseForm
+from .models import Artist, Release, Review, ReportReleaseInfo, ReportArtistInfo, ReportReviewContent, Artist
 
 def get_ctx(request, release=None):
     ctx = { 'searchForm': SearchForm() }
@@ -19,6 +19,9 @@ def get_ctx(request, release=None):
         ctx['accentColors'] = default_colors()
     if request.user.is_authenticated:
         ctx['userName'] = request.user.username
+
+    
+    ctx['superuser'] = request.user.is_superuser
 
     return ctx
 
@@ -309,10 +312,34 @@ def user(request, pk):
     return render(request, 'accounts/user.html', context = ctx)
 
 def admin_reports(request):
-    ctx = { 'userId': 0, 'accentColors': default_colors(), 'searchForm': SearchForm() }
+    ctx = get_ctx(request)
     # Validate that the user is an admin
     # View logic here
+    ctx['releaseReports'] = ReportReleaseInfo.objects.all()
+    ctx['reviewReports'] = ReportReviewContent.objects.all()
+    ctx['artistReports'] = ReportArtistInfo.objects.all()
     return render(request, 'admin/reports.html', context = ctx)
+
+def delete_release(request, release_pk):
+    if request.user is not None:
+        if request.user.is_superuser:
+            release = Release.objects.get(pk = release_pk)
+            release.delete()
+    return redirect('admin_reports')
+
+def delete_review(request, review_pk):
+    if request.user is not None:
+        if request.user.is_superuser:
+            review = Review.objects.get(pk = review_pk)
+            review.delete()
+    return redirect('admin_reports')
+
+def delete_artist(request, artist_pk):
+    if request.user is not None:
+        if request.user.is_superuser:
+            artist = Artist.objects.get(pk = artist_pk)
+            artist.delete()
+    return redirect('admin_reports')
 
 def accent_colors_test(request):
     ctx = get_ctx(request)
@@ -325,7 +352,7 @@ def accent_colors_test(request):
 
     return render(request, 'accent_colors.html', ctx)
 
-def userPage(user, release):
+def userPage(request, release):
     ctx = get_ctx(request)
     
     return render(request, 'accounts/user?page.html', context = ctx)

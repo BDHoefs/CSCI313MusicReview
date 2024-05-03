@@ -1,6 +1,34 @@
-{% extends 'master.html' %} {% block title %}
-  Admin reports - MusicReview
-{% endblock %}
-{% block content %}
-  <h1>This is the admin reports page!</h1>
-{% endblock %}
+{% extends 'master.html' %} {% block title %} Admin reports - MusicReview
+{%endblock %} {% block content %}
+<h1>Release Reports</h1>
+{% for report in releaseReports %}
+<div class="p-3 bg-dark rounded mb-2">
+  <a href="{% url 'release' pk=report.release.pk %}">Reported release</a>
+  <p>{{report.report_text}}</p>
+  <a href="{% url 'delete_release' release_pk=report.release.pk %}"
+    >Delete Release</a
+  >
+</div>
+{% endfor %}
+<h1>Review Reports</h1>
+{% for report in reviewReports %}
+<div class="p-3 bg-dark rounded mb-2">
+  <h2>Review content</h2>
+  <p>{{report.review.content}}</p>
+  <h2>Report</h2>
+  <p>{{report.report_text}}</p>
+  <a href="{% url 'delete_review' review_pk=report.review.pk %}"
+    >Delete Review</a
+  >
+</div>
+{% endfor %}
+
+<h1>Artist Reports</h1>
+{% for report in artistReports %}
+<div class="p-3 bg-dark rounded mb-2">
+  <p>{{report.report_text}}</p>
+  <a href="{% url 'delete_artist' artist_pk=report.artist.pk %}"
+    >Delete Artist</a
+  >
+</div>
+{% endfor %} {% endblock %}
