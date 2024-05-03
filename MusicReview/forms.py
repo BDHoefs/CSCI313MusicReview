@@ -4,7 +4,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.forms import inlineformset_factory
 from django.contrib.auth.models import User
 
-from .models import Review, Release, Artist, Song, ReportReleaseInfo, ReportReviewContent
+from .models import Review, Release, Artist, Song, ReportReleaseInfo, ReportReviewContent, ReportArtistInfo
 from .widgets import Select2Widget, IntegerTime
 
 class ImageColorForm(forms.Form):
@@ -59,4 +59,9 @@ class ReportReleaseForm(forms.ModelForm):
 class ReportReviewForm(forms.ModelForm):
     class Meta:
         model = ReportReviewContent
+        fields = ['report_text']
+        
+class ReportArtistForm(forms.ModelForm):
+    class Meta:
+        model = ReportArtistInfo
         fields = ['report_text']

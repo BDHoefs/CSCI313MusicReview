@@ -8,7 +8,7 @@ from django.utils import timezone
 from PIL import Image
 
 from .accent_colors import default_colors, calculate_accent_colors
-from .forms import ImageColorForm, SearchForm, CreateUserForm, LoginForm, ReviewForm, ReleaseForm, TrackForm, ReleaseSort, ArtistForm, ReportReleaseInfo, ReportReviewForm, ReportReleaseForm
+from .forms import ImageColorForm, SearchForm, CreateUserForm, LoginForm, ReviewForm, ReleaseForm, TrackForm, ReleaseSort, ArtistForm, ReportReleaseInfo, ReportReviewForm, ReportReleaseForm, ReportArtistForm
 from .models import Artist, Release, Review, ReportReleaseInfo, ReportArtistInfo, ReportReviewContent, Artist
 
 def get_ctx(request, release=None):
@@ -42,6 +42,14 @@ def release_ctx(request, release):
     reviews = release.reviews.all()
     ctx['reviews'] = reviews
 
+    return ctx
+
+def artist_ctx(request, artist):
+    reviewForm = ReviewForm()
+    ctx = get_ctx(request)  # Get the common context
+    ctx['artist'] = artist
+    releases = artist.release_set.all()
+    ctx['releases'] = [releases[i:i+3] for i in range(0, len(releases), 3)]
     return ctx
 
 def home(request):
@@ -250,11 +258,8 @@ def release_add_track(request, pk):
 
 def artist(request, pk):
     artist = Artist.objects.get(pk=pk)
-    reviewForm = ReviewForm()
-    ctx = get_ctx(request)  # Get the common context
-    ctx['artist'] = artist
-    releases = artist.release_set.all()
-    ctx['releases'] = [releases[i:i+3] for i in range(0, len(releases), 3)]
+    ctx = artist_ctx(request, artist)
+
     return render(request, 'music/artist.html', context=ctx)
 
 def report_release(request, pk):
@@ -304,6 +309,28 @@ def report_review(request, release_pk, review_pk):
     ctx['reportReviewForm'] = ReportReviewForm()
 
     return render(request, 'music/release.html', context = ctx)
+
+def report_artist(request, artist_pk):
+    artist = Artist.objects.get(pk=artist_pk)
+    ctx = artist_ctx(request, artist)
+    
+    if request.method == 'POST':
+        if not request.user.is_authenticated:
+            return redirect('register')
+        report_form = ReportArtistForm(request.POST)
+        if report_form.is_valid():
+            report = report_form.save(commit = False)
+            report.artist = artist
+            report.reported_by = request.user
+            report.report_time = timezone.now()
+            report.save()
+
+            return redirect('artist', pk=artist.pk)
+        else:
+            ctx['errMessages'] = ['Error submitting report']
+
+    ctx['reportArtistForm'] = ReportArtistForm()
+    return render(request, 'music/artist.html', context=ctx)
 
 def user(request, pk):
     ctx = get_ctx(request)

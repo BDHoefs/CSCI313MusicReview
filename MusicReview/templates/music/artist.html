@@ -13,6 +13,20 @@
   </div>
 
   <div class="p-3 bg-dark rounded ml-4">
+    {% if reportArtistForm is None %}
+    <div class="float-right">
+      <a href="{% url 'report_artist' artist.pk %}" class="btn btn-danger"
+        >Report artist</a
+      >
+    </div>
+    {% else %}
+    <form method="POST">
+      {% csrf_token %} {% for field in reportArtistForm %}
+      <p>{{ field }}</p>
+      {%endfor %}
+      <input class="btn btn-danger mb-4" type="submit" value="Submit report" />
+    </form>
+    {% endif %}
     <div class="row">
       {% for row in releases %} {% for release in row %}
       <div class="col-md-4">
