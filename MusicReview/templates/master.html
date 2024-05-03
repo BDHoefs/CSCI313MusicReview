@@ -108,16 +108,9 @@
             </button>
 
             <ul class="nav navbar-nav">
-              <form
-                action="{% url 'search'%}"
-                method="post"
-                class="form-inline mr-4"
-              >
-                {% csrf_token %} {% for field in searchForm %} {{ field }}
-                {%endfor %}
-                <input class="btn btn-dark" type="submit" value="Search" />
-              </form>
-
+            <li class="nav-item mt-3">
+              <a class="nav-link" href="{% url 'search'%}">Search</a>
+            </li>
               <li class="nav-item mt-3">
                 <a class="nav-link" href="{% url 'logon' %}">Login</a>
               </li>

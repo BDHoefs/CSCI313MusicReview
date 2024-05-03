@@ -1,6 +1,53 @@
-{% extends 'master.html' %} {% block title %}
-  Artist - MusicReview
-{% endblock %}
+{% extends 'master.html' %}
+{% block title %}Artist - MusicReview{% endblock %}
 {% block content %}
-  <h1>This is the artist page!</h1>
+<div class="d-flex">
+  <div class="d-flex flex-column flex-shrink-0 p-3 bg-dark rounded" style="width: 300px">
+    <img src="{{ artist.artist_photo.url }}" alt="{{ artist.name }}" />
+
+    <div class="mt-3">
+      <h5>{{ artist.name }}</h5>
+    </div>
+  </div>
+
+  <div class="flex-grow-1 ml-4">
+    {% if reviewForm is None %} {% else %}
+    <h3>{{reviews|length}} Reviews</h3>
+
+    <form action="{% url 'artist' pk=artist.pk %}" method="post" class="form">
+      {% csrf_token %} {% for field in reviewForm %}
+      <div class="form-group">{{field}}</div>
+      {% endfor %}
+      <input class="btn btn-dark mb-4" type="submit" value="Submit" />
+    </form>
+    {% endif %} {% for review in reviews %}
+    <div class="p-3 bg-dark rounded mb-2">
+      <div style="display: flex; justify-content: space-between">
+        <b>{{ review.user.username }}</b>
+        <p style="margin-left: auto">{{ review.score }}/10</p>
+      </div>
+      <p>{{review.content}}</p>
+
+      {% if review.pk == reportReview.pk %}
+      <form method="POST">
+        {% csrf_token %} {% for field in reportReviewForm %}
+        <p>{{ field }}</p>
+        {%endfor %}
+        <input
+          class="btn btn-danger mb-4"
+          type="submit"
+          value="Submit report"
+        />
+      </form>
+      {% else %}
+      <a
+        href="{% url 'report_review' review_pk=review.pk release_pk=release.pk %}"
+        >Report review</a
+      >
+      {% endif %}
+    </div>
+    {% endfor %}
+  </div>
+
+</div>
 {% endblock %}

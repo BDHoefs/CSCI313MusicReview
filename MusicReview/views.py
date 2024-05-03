@@ -9,7 +9,7 @@ from PIL import Image
 
 from .accent_colors import default_colors, calculate_accent_colors
 from .forms import ImageColorForm, SearchForm, CreateUserForm, LoginForm, ReviewForm, ReleaseForm, TrackForm, ReleaseSort, ArtistForm, ReportReleaseInfo, ReportReviewContent
-from .models import Release, Review
+from .models import Release, Review, Artist
 
 def get_ctx(request, release=None):
     ctx = { 'searchForm': SearchForm() }
@@ -89,7 +89,26 @@ def register(request):
 
 def browse_artists(request):
     ctx = get_ctx(request)
-    # View logic here
+    sort = 'Recently added'
+
+    if request.method == 'POST':
+        sort_form = ReleaseSort(request.POST)
+        if sort_form.is_valid():
+            sort = sort_form.cleaned_data['sort']
+
+    sort_form = ReleaseSort()
+    ctx['sortForm'] = sort_form
+
+    if sort == 'Recently added':
+        ctx['artists'] = Artist.objects.order_by('time_added')[:100]
+    elif sort == 'Recently reviewed':
+        ctx['artists'] = Artist.objects.order_by('last_reviewed')[:100]
+
+    if ctx['artists'] is not None:
+        releases = ctx['artists']
+        ctx['artists'] = [releases[i:i+3] for i in range(0, len(releases), 3)]
+
+    print(ctx['artists'])
     return render(request, 'music/browse_artists.html', context = ctx)
 
 def browse_releases(request):
@@ -227,9 +246,14 @@ def release_add_track(request, pk):
     return render(request, 'music/release.html', context=ctx)
 
 def artist(request, pk):
-    ctx = get_ctx(request)
-    # View logic here
-    return render(request, 'music/artist.html', context = ctx)
+    artist = Artist.objects.get(pk=pk)
+    reviewForm = ReviewForm()
+    ctx = get_ctx(request)  # Get the common context
+    ctx.update({
+        'artist': artist,
+        'reviewForm': reviewForm,
+    })
+    return render(request, 'music/artist.html', context=ctx)
 
 def report_release(request, pk):
     release = Release.objects.get(pk=pk)    
