@@ -95,7 +95,7 @@
     {% endif %} {% for review in reviews %}
     <div class="p-3 bg-dark rounded mb-2">
       <div style="display: flex; justify-content: space-between">
-        <b>{{ review.user.username }}</b>
+        <b><a class="ml-2" href={%url 'user' pk=user.id %}> {{review.user.username}} </a></b>
         <p style="margin-left: auto">{{ review.score }}/10</p>
       </div>
       <p>{{review.content}}</p>

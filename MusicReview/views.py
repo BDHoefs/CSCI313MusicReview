@@ -4,8 +4,8 @@ from django.shortcuts import render, redirect
 from django.views.decorators.csrf import requires_csrf_token
 from django.contrib.auth import authenticate, login, logout
 from django.utils import timezone
-
 from PIL import Image
+from django.contrib.auth.models import User
 
 from .accent_colors import default_colors, calculate_accent_colors
 from .forms import ImageColorForm, SearchForm, CreateUserForm, LoginForm, ReviewForm, ReleaseForm, TrackForm, ReleaseSort, ArtistForm, ReportReleaseInfo, ReportReviewForm, ReportReleaseForm, ReportArtistForm
@@ -334,7 +334,10 @@ def report_artist(request, artist_pk):
 
 def user(request, pk):
     ctx = get_ctx(request)
-    # View logic here
+    user= User.objects.get(pk = pk)
+    reviews = user.review_set.all()
+    ctx['user']=user
+    ctx['reviews']= reviews
     return render(request, 'accounts/user.html', context = ctx)
 
 def admin_reports(request):
@@ -369,5 +372,4 @@ def delete_artist(request, artist_pk):
 
 def userPage(request, release):
     ctx = get_ctx(request)
-    
     return render(request, 'accounts/user?page.html', context = ctx)
