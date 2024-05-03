@@ -44,8 +44,7 @@ def release_ctx(request, release):
     return ctx
 
 def home(request):
-    ctx = get_ctx(request)
-    return render(request, 'index.html', context = ctx)
+    return redirect('browse_releases')
 
 def logon(request):
     ctx = get_ctx(request)
