@@ -36,7 +36,8 @@ def release_ctx(request, release):
     song_lengths = [(song.title, str(timedelta(seconds=song.length)).lstrip('0:')) for song in songs if song.length is not None]
     ctx['songLengths'] = song_lengths
 
-    ctx['artists'] = ', '.join([artist.name for artist in release.artists.all()])
+    ctx['artists'] = release.artists.all()
+    #ctx['artists'] = ', '.join([artist.name for artist in release.artists.all()])
 
     reviews = release.reviews.all()
     ctx['reviews'] = reviews

@@ -59,7 +59,9 @@
     <table class="table">
       <tr>
         <td>Artists</td>
-        <td style="text-align: right">{{artists}}</td>
+        <td style="text-align: right">
+          {% for artist in artists %} <a class="ml-2" href={%url 'artist' pk=artist.pk %}> {{artist.name}} </a> {% endfor %}
+        </td>
       </tr>
       <tr>
         <td>Type</td>
