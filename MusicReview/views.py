@@ -340,17 +340,6 @@ def delete_artist(request, artist_pk):
             artist.delete()
     return redirect('admin_reports')
 
-def accent_colors_test(request):
-    ctx = get_ctx(request)
-    ctx['imageForm'] = ImageColorForm()
-    if request.method == 'POST':
-        ctx['imageForm'] = ImageColorForm(request.POST, request.FILES)
-        if ctx['imageForm'].is_valid():
-            image = Image.open(ctx['imageForm'].cleaned_data['image'])
-            ctx['accentColors'] = calculate_accent_colors(image)
-
-    return render(request, 'accent_colors.html', ctx)
-
 def userPage(request, release):
     ctx = get_ctx(request)
     

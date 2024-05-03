@@ -23,5 +23,4 @@ urlpatterns = [
     path('delete_release/<int:release_pk>', views.delete_release, name='delete_release'),
     path('delete_review/<int:review_pk>', views.delete_review, name='delete_review'),
     path('delete_artist/<int:artist_pk>', views.delete_artist, name='delete_artist'),
-    path('accent-color-test', views.accent_colors_test, name='accent-colors-test'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
