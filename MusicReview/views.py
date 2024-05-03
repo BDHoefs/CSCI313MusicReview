@@ -252,10 +252,9 @@ def artist(request, pk):
     artist = Artist.objects.get(pk=pk)
     reviewForm = ReviewForm()
     ctx = get_ctx(request)  # Get the common context
-    ctx.update({
-        'artist': artist,
-        'reviewForm': reviewForm,
-    })
+    ctx['artist'] = artist
+    releases = artist.release_set.all()
+    ctx['releases'] = [releases[i:i+3] for i in range(0, len(releases), 3)]
     return render(request, 'music/artist.html', context=ctx)
 
 def report_release(request, pk):
