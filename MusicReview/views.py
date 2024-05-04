@@ -335,7 +335,7 @@ def report_artist(request, artist_pk):
 def user(request, pk):
     ctx = get_ctx(request)
     user= User.objects.get(pk = pk)
-    reviews = user.review_set.all()
+    reviews = Review.objects.filter(release__reviews__user_id=user.id)
     ctx['user']=user
     ctx['reviews']= reviews
     return render(request, 'accounts/user.html', context = ctx)
